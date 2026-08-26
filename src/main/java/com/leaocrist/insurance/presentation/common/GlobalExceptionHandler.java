@@ -1,7 +1,8 @@
-package com.leaocrist.insurance.presentation;
+package com.leaocrist.insurance.presentation.common;
 
 import com.leaocrist.insurance.application.customer.CustomerNotFoundException;
 import com.leaocrist.insurance.application.policy.PolicyNotFoundException;
+import com.leaocrist.insurance.application.policy.PolicyNumberAlreadyExistsException;
 import com.leaocrist.insurance.application.risk.RiskNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,28 +29,34 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CustomerNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleCustomerNotFound(CustomerNotFoundException exception){
-        Map<String, String> error = new HashMap<>();
-        error.put("error", exception.getMessage());
+    public ResponseEntity<ErrorResponse> handleCustomerNotFound(CustomerNotFoundException exception){
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(exception.getMessage()));
     }
 
-
-    @ExceptionHandler(PolicyNotFoundException.class)
+    /*@ExceptionHandler(RiskNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleRiskNotFound (RiskNotFoundException exception){
         Map<String, String> error = new HashMap<>();
         error.put("error", exception.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }*/
+    @ExceptionHandler(RiskNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRiskNotFound(
+        RiskNotFoundException exception) {
+
+    return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(new ErrorResponse(exception.getMessage()));
     }
 
-    @ExceptionHandler(RiskNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handlePolicyNotFound(PolicyNotFoundException exception){
-        Map<String, String> error = new HashMap<>();
-        error.put("error", exception.getMessage());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    @ExceptionHandler(PolicyNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePolicyNotFound(PolicyNotFoundException exception){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(exception.getMessage()));
     }
 
     @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
@@ -59,4 +66,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(PolicyNumberAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handlePolicyNumberAlreadyExists(PolicyNumberAlreadyExistsException exception){
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(exception.getMessage()));
+    }
+
 }

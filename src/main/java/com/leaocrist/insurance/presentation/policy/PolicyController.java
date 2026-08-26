@@ -6,6 +6,7 @@ import com.leaocrist.insurance.application.policy.dto.PolicyResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,17 @@ public class PolicyController {
     @GetMapping
     public ResponseEntity<Page<PolicyResponse>> getPolicies(Pageable pageable){
         return ResponseEntity.ok(policyService.getPolicies(pageable));
+    }
+
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<Page<PolicyResponse>> getPoliciesByCustomer(
+            @PathVariable Long customerId,
+            @PageableDefault(size = 10, sort = "effectiveDate")
+            Pageable pageable
+    ){
+        return ResponseEntity.ok(
+                policyService.getPoliciesByCustomer(customerId, pageable)
+        );
     }
 
     @PatchMapping("/{id}/cancel")

@@ -31,7 +31,7 @@ public class PolicyService {
     @Transactional
     public PolicyResponse createPolicy(PolicyRequest request){
         if (policyRepository.existsByPolicyNumber(request.policyNumber())){
-            throw new IllegalArgumentException("Policy number already exists: " + request.policyNumber());
+            throw new PolicyNumberAlreadyExistsException(request.policyNumber());
         }
 
         Customer customer = customerRepository.findById(request.customerId())
@@ -63,6 +63,18 @@ public class PolicyService {
     @Transactional(readOnly = true)
     public Page<PolicyResponse> getPolicies(Pageable pageable){
         return policyRepository.findAll(pageable)
+                .map(this::mapToResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PolicyResponse> getPoliciesByCustomer(
+            Long customerId, Pageable pageable
+    ){
+        customerRepository.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException(customerId));
+
+        return policyRepository
+                .findByCustomer_Id(customerId, pageable)
                 .map(this::mapToResponse);
     }
 
