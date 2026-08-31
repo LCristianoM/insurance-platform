@@ -37,6 +37,11 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getCustomers(pageable));
     }
 
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Boolean> existsById(@PathVariable Long id){
+        return ResponseEntity.ok(customerService.existsById(id));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerRequest request){
         CustomerResponse response = customerService.updateCustomer(id, request);

@@ -4,6 +4,7 @@ import com.leaocrist.insurance.domain.customer.Customer;
 import com.leaocrist.insurance.domain.risk.Risk;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 
@@ -22,11 +23,13 @@ public class PolicyTest {
                 "911",
                 "leao@test.com"
         );
+        ReflectionTestUtils.setField(customer, "id", 1L);
 
         risk = new Risk(
                 "VEHICLE",
                 "Mercedes Benz CLA 2016"
         );
+        ReflectionTestUtils.setField(risk, "id", 1L);
     }
 
     @Test
@@ -36,8 +39,8 @@ public class PolicyTest {
                 "AUTO",
                 LocalDate.of(2026, 8, 18),
                 PolicyTerm.ONE_YEAR,
-                customer,
-                risk
+                customer.getId(),
+                risk.getId()
         );
         assertEquals(PolicyStatus.ACTIVE, policy.getStatus());
     }
@@ -51,8 +54,8 @@ public class PolicyTest {
                 "AUTO",
                 effectiveDate,
                 PolicyTerm.ONE_YEAR,
-                customer,
-                risk
+                customer.getId(),
+                risk.getId()
         );
         LocalDate expectedExpirationDate = LocalDate.of(2027, 8, 18);
         assertEquals(expectedExpirationDate, policy.getExpirationDate());
@@ -68,8 +71,8 @@ public class PolicyTest {
                 "AUTO",
                 effectiveDate,
                 PolicyTerm.SIX_MONTHS,
-                customer,
-                risk
+                customer.getId(),
+                risk.getId()
         );
 
         LocalDate expectedExpirationDate = LocalDate.of(2027, 3, 1);
@@ -91,7 +94,7 @@ public class PolicyTest {
                             effectiveDate,
                             PolicyTerm.ONE_YEAR,
                             null,
-                            risk
+                            risk.getId()
                     );
                 }
         );

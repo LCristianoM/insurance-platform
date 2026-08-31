@@ -56,4 +56,9 @@ public class RiskService {
                 .orElseThrow(()-> new RiskNotFoundException(id));
         riskRepository.delete(risk);
     }
+
+    @Transactional(readOnly = true)
+    public boolean existsById(Long id){
+        return riskRepository.existsById(id);
+    }
 }

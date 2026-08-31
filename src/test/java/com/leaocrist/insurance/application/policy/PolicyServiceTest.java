@@ -1,8 +1,10 @@
 package com.leaocrist.insurance.application.policy;
 
+import com.leaocrist.insurance.application.customer.CustomerClient;
 import com.leaocrist.insurance.application.customer.CustomerNotFoundException;
 import com.leaocrist.insurance.application.policy.dto.PolicyRequest;
 import com.leaocrist.insurance.application.policy.dto.PolicyResponse;
+import com.leaocrist.insurance.application.risk.RiskClient;
 import com.leaocrist.insurance.application.risk.RiskNotFoundException;
 import com.leaocrist.insurance.domain.customer.Customer;
 import com.leaocrist.insurance.domain.policy.Policy;
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -36,35 +39,22 @@ public class PolicyServiceTest {
     private PolicyRepository policyRepository;
 
     @Mock
-    private CustomerRepository customerRepository;
+    private CustomerClient customerClient;
 
     @Mock
-    private RiskRepository riskRepository;
+    private RiskClient riskClient;
 
     @InjectMocks
     private PolicyService policyService;
 
-    private Customer dummyCustomer;
-    private Risk dummyRisk;
     private PolicyRequest validRequest;
 
     @BeforeEach
     void setUp(){
-        dummyCustomer = new Customer(
-                "Leao",
-                "911",
-                "leao@test.com"
-        );
-
-        dummyRisk = new Risk(
-                "VEHICLE",
-                "Mercedes Benz CLA 2016"
-        );
-
         validRequest = new PolicyRequest(
                 "POL-001",
                 "AUTO",
-                LocalDate.of(2026, 8, 24),
+                LocalDate.of(2026,8,31),
                 PolicyTerm.ONE_YEAR,
                 1L,
                 1L
@@ -81,16 +71,16 @@ public class PolicyServiceTest {
 
             //Arrange
             when(policyRepository.existsByPolicyNumber(validRequest.policyNumber())).thenReturn(false);
-            when(customerRepository.findById(1L)).thenReturn(Optional.of(dummyCustomer));
-            when(riskRepository.findById(1L)).thenReturn(Optional.of(dummyRisk));
+            when(customerClient.existsById(validRequest.customerId())).thenReturn(true);
+            when(riskClient.existsById(validRequest.riskId())).thenReturn(true);
 
             Policy savedPolicy = new Policy(
                     validRequest.policyNumber(),
                     validRequest.policyType(),
                     validRequest.effectiveDate(),
                     validRequest.term(),
-                    dummyCustomer,
-                    dummyRisk
+                    validRequest.customerId(),
+                    validRequest.riskId()
             );
             when(policyRepository.save(any(Policy.class))).thenReturn(savedPolicy);
 
@@ -126,7 +116,7 @@ public class PolicyServiceTest {
 
             //Arrange
             when(policyRepository.existsByPolicyNumber(validRequest.policyNumber())).thenReturn(false);
-            when(customerRepository.findById(1L)).thenReturn(Optional.empty());
+            when(customerClient.existsById(validRequest.customerId())).thenReturn(false);
 
             // Act & Assert
             assertThatThrownBy(()-> policyService.createPolicy(validRequest))
@@ -141,8 +131,8 @@ public class PolicyServiceTest {
 
             //Arrange
             when(policyRepository.existsByPolicyNumber(validRequest.policyNumber())).thenReturn(false);
-            when(customerRepository.findById(1L)).thenReturn(Optional.of(dummyCustomer));
-            when(riskRepository.findById(1L)).thenReturn(Optional.empty());
+            when(customerClient.existsById(validRequest.customerId())).thenReturn(true);
+            when(riskClient.existsById(validRequest.riskId())).thenReturn(false);
 
             // Act & Assert
             assertThatThrownBy(()-> policyService.createPolicy(validRequest))
@@ -166,8 +156,8 @@ public class PolicyServiceTest {
                     "AUTO",
                     LocalDate.of(2026, 8, 24),
                     PolicyTerm.ONE_YEAR,
-                    dummyCustomer,
-                    dummyRisk
+                    validRequest.customerId(),
+                    validRequest.riskId()
             );
 
             // ACt
@@ -191,8 +181,8 @@ public class PolicyServiceTest {
                     "AUTO",
                     LocalDate.of(2026, 8, 24),
                     PolicyTerm.ONE_YEAR,
-                    dummyCustomer,
-                    dummyRisk
+                    validRequest.customerId(),
+                    validRequest.riskId()
             );
             cancelledPolicy.cancel();
 

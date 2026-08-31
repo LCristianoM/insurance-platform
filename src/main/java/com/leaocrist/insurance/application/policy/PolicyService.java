@@ -1,8 +1,10 @@
 package com.leaocrist.insurance.application.policy;
 
+import com.leaocrist.insurance.application.customer.CustomerClient;
 import com.leaocrist.insurance.application.customer.CustomerNotFoundException;
 import com.leaocrist.insurance.application.policy.dto.PolicyRequest;
 import com.leaocrist.insurance.application.policy.dto.PolicyResponse;
+import com.leaocrist.insurance.application.risk.RiskClient;
 import com.leaocrist.insurance.application.risk.RiskNotFoundException;
 import com.leaocrist.insurance.domain.customer.Customer;
 import com.leaocrist.insurance.domain.policy.Policy;
@@ -19,34 +21,35 @@ import org.springframework.transaction.annotation.Transactional;
 public class PolicyService {
 
     private final PolicyRepository policyRepository;
-    private final CustomerRepository customerRepository;
-    private final RiskRepository riskRepository;
+    private final CustomerClient customerClient;
+    private final RiskClient riskClient;
 
-    public PolicyService(PolicyRepository policyRepository, CustomerRepository customerRepository, RiskRepository riskRepository) {
+    public PolicyService(PolicyRepository policyRepository, CustomerClient customerClient, RiskClient riskClient) {
         this.policyRepository = policyRepository;
-        this.customerRepository = customerRepository;
-        this.riskRepository = riskRepository;
+        this.customerClient = customerClient;
+        this.riskClient = riskClient;
     }
 
     @Transactional
     public PolicyResponse createPolicy(PolicyRequest request){
+
         if (policyRepository.existsByPolicyNumber(request.policyNumber())){
             throw new PolicyNumberAlreadyExistsException(request.policyNumber());
         }
-
-        Customer customer = customerRepository.findById(request.customerId())
-                .orElseThrow(()-> new CustomerNotFoundException(request.customerId()));
-
-        Risk risk = riskRepository.findById(request.riskId())
-                .orElseThrow(()-> new RiskNotFoundException(request.riskId()));
+        if (!customerClient.existsById(request.customerId())){
+            throw new CustomerNotFoundException(request.customerId());
+        }
+        if (!riskClient.existsById(request.riskId())){
+            throw new RiskNotFoundException(request.riskId());
+        }
 
         Policy policy = new Policy(
                 request.policyNumber(),
                 request.policyType(),
                 request.effectiveDate(),
                 request.term(),
-                customer,
-                risk
+                request.customerId(),
+                request.riskId()
         );
 
         Policy savedPolicy = policyRepository.save(policy);
@@ -70,11 +73,12 @@ public class PolicyService {
     public Page<PolicyResponse> getPoliciesByCustomer(
             Long customerId, Pageable pageable
     ){
-        customerRepository.findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException(customerId));
+        if(!customerClient.existsById(customerId)){
+            throw new CustomerNotFoundException(customerId);
+        }
 
         return policyRepository
-                .findByCustomer_Id(customerId, pageable)
+                .findByCustomerId(customerId, pageable)
                 .map(this::mapToResponse);
     }
 
@@ -97,10 +101,8 @@ public class PolicyService {
                 policy.getTerm(),
                 policy.getEffectiveDate(),
                 policy.getExpirationDate(),
-                policy.getCustomer().getId(),
-                policy.getCustomer().getName(),
-                policy.getRisk().getId(),
-                policy.getRisk().getType()
+                policy.getCustomerId(),
+                policy.getRiskId()
         );
     }
 }

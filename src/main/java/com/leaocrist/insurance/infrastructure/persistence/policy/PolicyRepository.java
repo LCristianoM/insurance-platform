@@ -13,5 +13,5 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
 
     boolean existsByPolicyNumber(String policyNumber);
 
-    Page<Policy> findByCustomer_Id(Long customerId, Pageable pageable);
+    Page<Policy> findByCustomerId(Long customerId, Pageable pageable);
 }

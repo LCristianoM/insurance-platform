@@ -36,6 +36,11 @@ public class RiskController {
         return ResponseEntity.ok(riskService.getRisks(pageable));
     }
 
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Boolean> existsById(@PathVariable Long id){
+        return ResponseEntity.ok(riskService.existsById(id));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<RiskResponse> updateRisk(@PathVariable Long id, @Valid @RequestBody RiskRequest request){
         return ResponseEntity.ok(riskService.updateRisk(id, request));

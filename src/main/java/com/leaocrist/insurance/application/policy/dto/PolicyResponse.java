@@ -14,8 +14,6 @@ public record PolicyResponse(
         LocalDate effectiveDate,
         LocalDate expirationDate,
         Long customerId,
-        String customerName,
-        Long riskId,
-        String riskType
+        Long riskId
 ) {
 }

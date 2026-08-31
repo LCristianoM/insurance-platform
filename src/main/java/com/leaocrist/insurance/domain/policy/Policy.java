@@ -28,13 +28,19 @@ public class Policy {
     @Column(nullable = false)
     private PolicyTerm term;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+/*    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "risk_id", nullable = false)
-    private Risk risk;
+    private Risk risk;*/
+
+    @Column(name = "customer_id", nullable = false)
+    private Long customerId;
+
+    @Column(name = "risk_id", nullable = false)
+    private Long riskId;
 
     private LocalDate effectiveDate;
     private LocalDate expirationDate;
@@ -42,16 +48,22 @@ public class Policy {
     protected Policy(){
     }
 
-    public Policy(String policyNumber, String policyType, LocalDate effectiveDate, PolicyTerm term, Customer customer, Risk risk) {
+    public Policy(
+            String policyNumber,
+            String policyType,
+            LocalDate effectiveDate,
+            PolicyTerm term,
+            Long customerId,
+            Long riskId
+    ) {
         this.policyNumber = Objects.requireNonNull(policyNumber, "Policy number is required.");
         this.policyType = Objects.requireNonNull(policyType, "Policy type is required.");
         this.effectiveDate = Objects.requireNonNull(effectiveDate, "Effective date is required.");
         this.term = Objects.requireNonNull(term, "Policy term is required.");
-        this.customer = Objects.requireNonNull(customer, "Customer is required.");
-        this.risk = Objects.requireNonNull(risk, "Risk is required.");
+        this.customerId = Objects.requireNonNull(customerId, "Customer is required.");
+        this.riskId = Objects.requireNonNull(riskId, "Risk is required.");
 
         this.status = PolicyStatus.ACTIVE;
-
 
         calculateExpirationDate();
     }
@@ -84,12 +96,12 @@ public class Policy {
         return term;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Long getCustomerId() {
+        return customerId;
     }
 
-    public Risk getRisk() {
-        return risk;
+    public Long getRiskId() {
+        return riskId;
     }
 
     private void calculateExpirationDate(){
