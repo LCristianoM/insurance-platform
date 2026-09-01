@@ -1,6 +1,7 @@
 package com.leaocrist.insurance.presentation.common;
 
 import com.leaocrist.insurance.application.customer.CustomerNotFoundException;
+import com.leaocrist.insurance.application.policy.CustomerServiceUnavailableException;
 import com.leaocrist.insurance.application.policy.PolicyNotFoundException;
 import com.leaocrist.insurance.application.policy.PolicyNumberAlreadyExistsException;
 import com.leaocrist.insurance.application.risk.RiskNotFoundException;
@@ -72,6 +73,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(exception.getMessage()));
+    }
+
+    @ExceptionHandler(CustomerServiceUnavailableException.class)
+    public ResponseEntity<String> handleCustomerServiceUnavailable(
+            CustomerServiceUnavailableException exception
+    ){
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(exception.getMessage());
     }
 
 }

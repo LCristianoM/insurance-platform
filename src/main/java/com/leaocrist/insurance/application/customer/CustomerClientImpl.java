@@ -1,9 +1,10 @@
 package com.leaocrist.insurance.application.customer;
 
-import com.leaocrist.insurance.infrastructure.persistence.customer.CustomerRepository;
+import com.leaocrist.insurance.application.policy.CustomerServiceUnavailableException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 @Service
 public class CustomerClientImpl implements CustomerClient {
@@ -19,23 +20,15 @@ public class CustomerClientImpl implements CustomerClient {
 
     @Override
     public boolean existsById(Long customerId) {
-        return Boolean.TRUE.equals(
-                restClient.get()
-                        .uri(customerServiceUrl + "/customers/{id}/exists", customerId)
-                        .retrieve()
-                        .body(Boolean.class)
-        );
+        try {
+            Boolean exists = restClient.get()
+                    .uri(customerServiceUrl + "/customers/{id}/exists", customerId)
+                    .retrieve()
+                    .body(Boolean.class);
+            return Boolean.TRUE.equals(exists);
+
+        } catch (RestClientException e) {
+            throw new CustomerServiceUnavailableException(e.getMessage());
+        }
     }
-
-
-   /* private final CustomerRepository customerRepository;
-
-    public CustomerClientImpl(CustomerRepository customerRepository){
-        this.customerRepository = customerRepository;
-    }
-
-    @Override
-    public boolean existsById(Long customerId) {
-        return customerRepository.existsById(customerId);
-    }*/
 }
