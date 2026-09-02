@@ -1,4 +1,4 @@
-package com.leaocrist.insurance.domain.risk;
+package com.leaocrist.risk_service.domain.risk;
 
 import jakarta.persistence.*;
 

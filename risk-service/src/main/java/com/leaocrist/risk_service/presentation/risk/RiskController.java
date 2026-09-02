@@ -1,8 +1,8 @@
-package com.leaocrist.insurance.presentation.risk;
+package com.leaocrist.risk_service.presentation.risk;
 
-import com.leaocrist.insurance.application.risk.RiskService;
-import com.leaocrist.insurance.application.risk.dto.RiskRequest;
-import com.leaocrist.insurance.application.risk.dto.RiskResponse;
+import com.leaocrist.risk_service.application.risk.RiskService;
+import com.leaocrist.risk_service.application.risk.dto.RiskRequest;
+import com.leaocrist.risk_service.application.risk.dto.RiskResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

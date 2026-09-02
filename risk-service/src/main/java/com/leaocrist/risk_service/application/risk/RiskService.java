@@ -1,9 +1,9 @@
-package com.leaocrist.insurance.application.risk;
+package com.leaocrist.risk_service.application.risk;
 
-import com.leaocrist.insurance.application.risk.dto.RiskRequest;
-import com.leaocrist.insurance.application.risk.dto.RiskResponse;
-import com.leaocrist.insurance.domain.risk.Risk;
-import com.leaocrist.insurance.infrastructure.persistence.risk.RiskRepository;
+import com.leaocrist.risk_service.application.risk.dto.RiskRequest;
+import com.leaocrist.risk_service.application.risk.dto.RiskResponse;
+import com.leaocrist.risk_service.domain.risk.Risk;
+import com.leaocrist.risk_service.infrastructure.persistence.risk.RiskRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
