@@ -1,9 +1,10 @@
 package com.leaocrist.insurance.application.risk;
 
-import com.leaocrist.insurance.infrastructure.persistence.risk.RiskRepository;
+import com.leaocrist.insurance.application.policy.RiskServiceUnavailableException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 @Service
 public class RiskClientImpl implements RiskClient{
@@ -19,11 +20,15 @@ public class RiskClientImpl implements RiskClient{
 
     @Override
     public boolean existsById(Long riskId) {
-        return Boolean.TRUE.equals(
-                restClient.get()
-                        .uri(riskServiceUrl + "/risks/{id}/exists", riskId)
-                        .retrieve()
-                        .body(Boolean.class)
-        );
+        try {
+            Boolean exists =
+                    restClient.get()
+                            .uri(riskServiceUrl + "/risks/{id}/exists", riskId)
+                            .retrieve()
+                            .body(Boolean.class);
+            return Boolean.TRUE.equals(exists);
+        }catch (RestClientException e) {
+            throw new RiskServiceUnavailableException(e.getMessage());
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.leaocrist.insurance.application.customer.CustomerNotFoundException;
 import com.leaocrist.insurance.application.policy.CustomerServiceUnavailableException;
 import com.leaocrist.insurance.application.policy.PolicyNotFoundException;
 import com.leaocrist.insurance.application.policy.PolicyNumberAlreadyExistsException;
+import com.leaocrist.insurance.application.policy.RiskServiceUnavailableException;
 import com.leaocrist.insurance.application.risk.RiskNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -84,4 +85,11 @@ public class GlobalExceptionHandler {
                 .body(exception.getMessage());
     }
 
+    @ExceptionHandler(RiskServiceUnavailableException.class)
+    public ResponseEntity<String> handleRiskServiceUnavailable(
+            RiskServiceUnavailableException exception
+    ){
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(exception.getMessage());
+    }
 }

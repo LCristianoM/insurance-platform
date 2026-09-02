@@ -1,7 +1,5 @@
 package com.leaocrist.insurance.domain.policy;
 
-import com.leaocrist.insurance.domain.customer.Customer;
-import com.leaocrist.insurance.domain.risk.Risk;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

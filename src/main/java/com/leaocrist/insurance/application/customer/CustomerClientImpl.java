@@ -21,7 +21,8 @@ public class CustomerClientImpl implements CustomerClient {
     @Override
     public boolean existsById(Long customerId) {
         try {
-            Boolean exists = restClient.get()
+            Boolean exists =
+                    restClient.get()
                     .uri(customerServiceUrl + "/customers/{id}/exists", customerId)
                     .retrieve()
                     .body(Boolean.class);

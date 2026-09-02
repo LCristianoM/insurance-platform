@@ -1,4 +1,4 @@
-package com.leaocrist.insurance.application.risk.dto;
+package com.leaocrist.risk_service.application.risk.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
