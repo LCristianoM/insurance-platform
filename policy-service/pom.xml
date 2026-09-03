@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.leaocrist</groupId>
-	<artifactId>insurance-platform</artifactId>
+	<artifactId>policy-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
+	<name>policy-service</name>
 	<description/>
 	<url/>
 	<licenses>

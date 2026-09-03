@@ -41,7 +41,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/risk_db
 
   app:
-    build: .
+    build: ./policy-service
     container_name: insurance-app
     depends_on:
       postgres:
