@@ -1,0 +1,2 @@
+CREATE DATABASE customer_db;
+CREATE DATABASE risk_db;

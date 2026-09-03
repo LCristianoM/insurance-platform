@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 @Service
 public class CustomerClientImpl implements CustomerClient {
-
     private final RestClient restClient;
-
     @Value("${customer.service.url}")
     private String customerServiceUrl;
 
@@ -19,17 +19,24 @@ public class CustomerClientImpl implements CustomerClient {
     }
 
     @Override
-    public boolean existsById(Long customerId) {
+    @CircuitBreaker(name ="customerService", fallbackMethod = "existsByIdFallback")
+    public boolean existsById(Long customerId){
         try {
             Boolean exists =
                     restClient.get()
-                    .uri(customerServiceUrl + "/customers/{id}/exists", customerId)
-                    .retrieve()
-                    .body(Boolean.class);
+                            .uri(customerServiceUrl + "/customers/{id}/exists", customerId)
+                            .retrieve()
+                            .body(Boolean.class);
             return Boolean.TRUE.equals(exists);
-
         } catch (RestClientException e) {
             throw new CustomerServiceUnavailableException(e.getMessage());
         }
+    }
+
+    public boolean existsByIdFallback(Long customerId, Throwable t) {
+        System.out.println("## Circuit breaker fallback> " + t.getClass().getSimpleName());
+        throw new CustomerServiceUnavailableException(
+                "customer-service unavailable (circuit open or call failed): " + t.getMessage()
+        );
     }
 }
